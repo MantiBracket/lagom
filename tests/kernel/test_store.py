@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from minisgl.benchmark.perf import compare_memory_kernel_perf
+from lagom.benchmark.perf import compare_memory_kernel_perf
 import torch
-from minisgl.kernel import store_cache
-from minisgl.utils import call_if_main
+from lagom.kernel import store_cache
+from lagom.utils import call_if_main
 
 
 @call_if_main(__name__)
