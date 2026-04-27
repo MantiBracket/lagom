@@ -185,6 +185,7 @@ class HiRadixPrefixCache(BasePrefixCache):
         )
 
     def insert_prefix(self, input_ids: torch.Tensor, indices: torch.Tensor) -> InsertResult:
+        logger.info(f"indices device: {indices.device}")
         insert_len = align_down(len(input_ids), self.page_size)
         input_ids, indices = input_ids[:insert_len], indices[:insert_len]
         host_node, host_prefix_len = self._tree_walk(input_ids)
@@ -232,8 +233,8 @@ class HiRadixPrefixCache(BasePrefixCache):
             else:  # evict device part, but keep host backup
                 node.cuda_value = None
             # NOTE: root is always protected, so won't be evicted
-            if parent.ref_count == 0 and parent.is_leaf_device():
-                heapq.heappush(leave_nodes, parent)
+            if len(leave_nodes) <= 0:
+                leave_nodes = self._collect_leave_nodes_for_evict(is_host=False)
 
         return torch.cat(evicted_indices)
 
